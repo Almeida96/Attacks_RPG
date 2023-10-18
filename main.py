@@ -27,7 +27,7 @@ def change_language():
         start_button.config(text="Iniciar Ataque")
         advantage_combobox['values'] = advantage_combobox_values["pt"]
         results_frame.config(text="Resultados")
-        bonus_dice_checkbox.config(text="Dado Bônus")
+        bonus_dice_checkbox.config(text="Dado Bônus (1d4)")
         if advantage_combobox.get() == "None":
             advantage_combobox.set("Nenhum")
         elif advantage_combobox.get() == "Disadvantage":
@@ -40,7 +40,7 @@ def change_language():
         start_button.config(text="Start Attack")
         advantage_combobox['values'] = advantage_combobox_values["en"]
         results_frame.config(text="Results")
-        bonus_dice_checkbox.config(text="Bonus Dice")
+        bonus_dice_checkbox.config(text="Bonus Dice (1d4)")
         if advantage_combobox.get() == "Nenhum":
             advantage_combobox.set("None")
         elif advantage_combobox.get() == "Desvantagem":
@@ -184,7 +184,7 @@ scrollbar.grid(row=0, column=1, sticky='nsew')
 results_text.config(yscrollcommand=scrollbar.set)
 
 bonus_dice_var = tk.IntVar()
-bonus_dice_checkbox = ttk.Checkbutton(root, text="Dado Bônus", variable=bonus_dice_var)
+bonus_dice_checkbox = ttk.Checkbutton(root, text="Dado Bônus (1d4)", variable=bonus_dice_var)
 bonus_dice_checkbox.grid(row=2, column=0, padx=10, pady=(5, 5), sticky=tk.W)  # Mover para debaixo do botão de linguagem inglês
 
 root.mainloop()
