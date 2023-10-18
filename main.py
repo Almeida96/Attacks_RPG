@@ -64,21 +64,21 @@ def start_attack():
     num_attacks = int(num_attacks_value)
 
     hit_count = 0
-    crit_count = 0
+    crit_pos_count = 0
+    crit_neg_count = 0
     results_list = []
 
     for _ in range(num_attacks):
         rolls = []
         if advantage_value == advantage_combobox_values[selected_language.get()][0]:  # "Nenhum"/"None"
             rolls.append(random.randint(1, 20))
-        elif advantage_value == advantage_combobox_values[selected_language.get()][1]:  # "2"
-            rolls.extend([random.randint(1, 20), random.randint(1, 20)])
-        elif advantage_value == advantage_combobox_values[selected_language.get()][2]:  # "3"
-            rolls.extend([random.randint(1, 20), random.randint(1, 20), random.randint(1, 20)])
+        elif advantage_value in advantage_combobox_values[selected_language.get()][1:3]:  # "2" or "3"
+            rolls.extend([random.randint(1, 20) for _ in range(int(advantage_value))])
         else:  # "Desvantagem"/"Disadvantage"
             rolls.extend([random.randint(1, 20), random.randint(1, 20)])
 
-        roll = max(rolls) if "Desvantagem" not in advantage_value else min(rolls)
+        # Determine roll based on advantage/disadvantage
+        roll = min(rolls) if advantage_value == advantage_combobox_values[selected_language.get()][3] else max(rolls)
 
         bonus = 0
         bonus_str = ""
@@ -90,18 +90,33 @@ def start_attack():
             total_value = roll + user_hit
             bonus_str = f" = {total_value} [{', '.join(map(str, rolls))}] + {user_hit}"
 
-        is_critical = " (Crítico!)" if 20 in rolls and not bonus_dice_var.get() else ""
+        is_critical = ""
+        if advantage_value == advantage_combobox_values[selected_language.get()][3]:
+            if 1 in rolls:
+                is_critical = " (Crítico Negativo!)" if selected_language.get() == "pt" else " (Negative Critical!)"
+                crit_neg_count += 1
+            elif all(roll == 20 for roll in rolls):
+                is_critical = " (Crítico Positivo!)" if selected_language.get() == "pt" else " (Positive Critical!)"
+                crit_pos_count += 1
+        elif 20 in rolls:
+            is_critical = " (Crítico Positivo!)" if selected_language.get() == "pt" else " (Positive Critical!)"
+            crit_pos_count += 1
+        elif 1 in rolls:
+            is_critical = " (Crítico Negativo!)" if selected_language.get() == "pt" else " (Negative Critical!)"
+            crit_neg_count += 1
 
         hit_result = "Sim" if selected_language.get() == "pt" else "Yes"
         if roll + user_hit + bonus < creature_ca:
             hit_result = "Não" if selected_language.get() == "pt" else "No"
 
+        attack_str = "Ataque" if selected_language.get() == "pt" else "Attack"
+        rolled_str = "rolou" if selected_language.get() == "pt" else "rolls"
+
         results_list.append(
-            f"Ataque {len(results_list) + 1} rolou {len(rolls)}d20{bonus_str} {hit_result}{is_critical}")
+            f"{attack_str} {len(results_list) + 1} {rolled_str} {len(rolls)}d20{bonus_str} {hit_result}{is_critical}")
+
         if hit_result == "Sim" or hit_result == "Yes":
             hit_count += 1
-            if is_critical:
-                crit_count += 1
 
     # Display results
     results_text.config(state=tk.NORMAL)
@@ -109,14 +124,14 @@ def start_attack():
     for result in results_list:
         results_text.insert(tk.END, result + "\n")
 
-    total_hits_str = f"\nTotal de Acertos: {hit_count}\nTotal Críticos: {crit_count}\n" if selected_language.get() == "pt" else f"\nTotal Hits: {hit_count}\nTotal Critics: {crit_count}\n"
+    total_hits_str = f"\nTotal de Acertos: {hit_count}\nCríticos Positivos: {crit_pos_count}\nCríticos Negativos: {crit_neg_count}\n" if selected_language.get() == "pt" else f"\nTotal Hits: {hit_count}\nPositive Critics: {crit_pos_count}\nNegative Critics: {crit_neg_count}\n"
     results_text.insert(tk.END, total_hits_str)
     results_text.config(state=tk.DISABLED)
 
 # GUI
 root = tk.Tk()
 root.title("Attack Simulator")
-root.geometry("790x390")
+root.geometry("900x395")
 root.resizable(False, False)
 
 validate_input = root.register(on_validate_input)
@@ -162,7 +177,7 @@ start_button.grid(row=11, column=0, padx=10, pady=(0, 10), sticky=tk.W + tk.E)
 
 results_frame = ttk.LabelFrame(root, text="Resultados")
 results_frame.grid(row=0, column=1, rowspan=12, padx=20, pady=10, sticky=tk.W + tk.E + tk.N + tk.S)
-results_text = tk.Text(results_frame, wrap=tk.NONE, height=20, width=70, state=tk.DISABLED)
+results_text = tk.Text(results_frame, wrap=tk.NONE, height=20, width=82, state=tk.DISABLED)
 results_text.grid(row=0, column=0, padx=10, sticky=tk.W + tk.E)
 scrollbar = ttk.Scrollbar(results_frame, command=results_text.yview)
 scrollbar.grid(row=0, column=1, sticky='nsew')
