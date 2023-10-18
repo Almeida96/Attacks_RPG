@@ -13,6 +13,7 @@ Simples e facil, esse programa não foi feito para calcular dano, apenas o acert
 
 EN:
 Simple and easy, this program was not made to calculate damage, just the hit.
+
 1 - enter the value of the user's hit, without being the data. For example, if your hit is 1d20+17, just fill in the value 17. If your hit contains several numbers, due to passives and items, add them all together and enter a single number
 
 2 - Enter the Creature's AC value
