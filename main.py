@@ -91,7 +91,7 @@ def start_attack():
             bonus_str = f" = {total_value} [{', '.join(map(str, rolls))}] + {user_hit}"
 
         is_critical = ""
-        if advantage_value == advantage_combobox_values[selected_language.get()][3]:
+        if advantage_value == advantage_combobox_values[selected_language.get()][3]:  # Disadvantage
             if 1 in rolls:
                 is_critical = " (Crítico Negativo!)" if selected_language.get() == "pt" else " (Negative Critical!)"
                 crit_neg_count += 1
@@ -101,7 +101,7 @@ def start_attack():
         elif 20 in rolls:
             is_critical = " (Crítico Positivo!)" if selected_language.get() == "pt" else " (Positive Critical!)"
             crit_pos_count += 1
-        elif 1 in rolls:
+        elif all(roll == 1 for roll in rolls) and advantage_value in advantage_combobox_values[selected_language.get()][1:3]:  # Only if all are 1 for 2 or 3 dice advantage
             is_critical = " (Crítico Negativo!)" if selected_language.get() == "pt" else " (Negative Critical!)"
             crit_neg_count += 1
 
