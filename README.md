@@ -1,23 +1,36 @@
-# Attacks_RPG
+# D&D 5e attack rolls
 
-PT:
-Simples e facil, esse programa não foi feito para calcular dano, apenas o acerto.
+Roll a group of attacks and calculate the exact chance to hit. This tool handles attack rolls only; it does not calculate damage.
 
-1 - insira o valor do acerto do usuario, sem ser o dado. Por exemplo, se seu acerto é 1d20+17, preencha apenas com o valor 17. Caso seu acerto contenha varios numeros, por conta de passivas e itens, some todos eles e insira um numero só
+## Run
 
-2 - Entre com o valor da CA da Criatura
+Requires Python 3.11+; the desktop interface also requires Tkinter.
 
-3 - Preencha a informação de vantagem, desvantagem, ataque comum ou vantagem de 3 dados.
+```sh
+python main.py
+python attacks.py --bonus 5 --ac 15 --mode advantage --count 4 --seed 42
+```
 
-4 - Insira quantos golpes você irá fazer, não tem limite.
+The CLI returns JSON containing every die, the selected d20, the total, hit/critical flags and exact probabilities. The seed makes a sample reproducible; probability calculations enumerate all possible outcomes and do not depend on the seed.
 
-EN:
-Simple and easy, this program was not made to calculate damage, just the hit.
+## Rules
 
-1 - enter the value of the user's hit, without being the data. For example, if your hit is 1d20+17, just fill in the value 17. If your hit contains several numbers, due to passives and items, add them all together and enter a single number
+Under the [2014 attack-roll rules](https://www.dndbeyond.com/sources/dnd/basic-rules-2014/combat#AttackRolls), a selected natural 1 misses and a selected natural 20 hits critically regardless of modifiers. Advantage selects the higher of two dice; disadvantage selects the lower. A bonus d4 changes the total, not the natural roll.
 
-2 - Enter the Creature's AC value
+For +5 against AC 15, ordinary hit chance is 55%, advantage is 79.75%, and disadvantage is 30.25%. Critical hits are included in the hit percentage.
 
-3 - Fill in the information about advantage, disadvantage, common attack or advantage of 3 dice.
+`three-dice` keeps the highest of three d20s. It is an optional mode for specific features or house rules, not the default advantage rule. Damage, expanded critical ranges, critical fumbles, simultaneous advantage/disadvantage, and resource consumption are not simulated.
 
-4 - Enter how many hits you will make, there is no limit.
+Attack count is limited to 1,000 per request. Attack bonus accepts −100 through 100, including negative modifiers; AC accepts 0 through 100.
+
+## Development
+
+```sh
+python -m unittest discover -s tests -v
+```
+
+`attacks.py` contains deterministic roll resolution, seeded simulation, exhaustive probabilities and the CLI. `main.py` is only a desktop adapter. Importing either module does not open a window.
+
+Tests cover automatic hits/misses, selected dice, exact probabilities, input limits, seeded replay and CLI output. [CI](https://github.com/Almeida96/Attacks_RPG/actions/workflows/ci.yml) runs on Linux and Windows.
+
+See [contributing](CONTRIBUTING.md) and [changes](CHANGELOG.md). No application-source license has been declared.
